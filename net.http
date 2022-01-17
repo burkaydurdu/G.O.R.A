@@ -1,0 +1,16 @@
+###
+GET http://localhost:8080
+
+###
+
+GET http://localhost:8080/random/en/word
+
+###
+
+POST http://localhost:8080/random/en/word
+Content-Type: application/json
+
+{
+  "word": "man",
+  "language": "EN"
+}
