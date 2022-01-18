@@ -6,4 +6,5 @@ type Database struct {
 	Password string
 	Port     int
 	Name     string
+	SSL      string
 }

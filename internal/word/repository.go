@@ -5,6 +5,9 @@ import "gorm.io/gorm"
 type Repository interface {
 	GetRandomWord() (*Word, error)
 	CreateNewWord(word *Word) error
+	CreateNewTranslate(dictionary *Dictionary) error
+	GetLanguageByCode(code string) (*Language, error)
+	GetWordByID(id string) (*Word, error)
 }
 
 type repository struct {
@@ -20,7 +23,7 @@ func NewRepository(g *gorm.DB) Repository {
 }
 
 func (r *repository) GetRandomWord() (word *Word, err error) {
-	result := r.g.First(&word)
+	result := r.g.Joins("Language").First(&word)
 
 	if result.Error == gorm.ErrRecordNotFound {
 		return nil, nil
@@ -31,6 +34,32 @@ func (r *repository) GetRandomWord() (word *Word, err error) {
 
 func (r *repository) CreateNewWord(word *Word) (err error) {
 	result := r.g.Create(&word)
+
+	return result.Error
+}
+
+func (r *repository) GetLanguageByCode(code string) (language *Language, err error) {
+	result := r.g.First(&language, "code = ?", code)
+
+	if result.Error == gorm.ErrRecordNotFound {
+		return nil, ErrLanguageNotFound
+	}
+
+	return language, nil
+}
+
+func (r *repository) GetWordByID(id string) (word *Word, err error) {
+	result := r.g.First(&word, id)
+
+	if result.Error == gorm.ErrRecordNotFound {
+		return nil, ErrWordNotFound
+	}
+
+	return word, nil
+}
+
+func (r *repository) CreateNewTranslate(dictionary *Dictionary) error {
+	result := r.g.Create(&dictionary)
 
 	return result.Error
 }

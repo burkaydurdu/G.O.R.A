@@ -1,10 +1,11 @@
 package word
 
-import "gorm.io/gorm"
+import "strings"
 
 type Service interface {
 	GetRandomWord() (*Word, error)
 	CreateNewWord(newWord *CreateNewWordDTO) error
+	CreateNewTranslate(wordID string, languageCode string, newTranslate *CreateNewTranslateDTO) error
 }
 
 type service struct {
@@ -24,10 +25,39 @@ func (s *service) GetRandomWord() (*Word, error) {
 func (s *service) CreateNewWord(newWord *CreateNewWordDTO) error {
 	word := new(Word)
 
-	word.Language = Language{Name: newWord.Language, Model: gorm.Model{ID: 2}}
+	language, err := s.r.GetLanguageByCode(newWord.LanguageCode)
+
+	if err == ErrLanguageNotFound {
+		return err
+	}
+
+	word.Language = *language
 	word.Content = newWord.Word
 
-	err := s.r.CreateNewWord(word)
+	err = s.r.CreateNewWord(word)
+
+	return err
+}
+
+func (s *service) CreateNewTranslate(wordID string, languageCode string, newTranslate *CreateNewTranslateDTO) error {
+	word, werr := s.r.GetWordByID(wordID)
+
+	if werr == ErrWordNotFound {
+		return werr
+	}
+
+	language, lerr := s.r.GetLanguageByCode(strings.ToUpper(languageCode))
+
+	if lerr == ErrLanguageNotFound {
+		return lerr
+	}
+
+	dictionary := new(Dictionary)
+	dictionary.Word = *word
+	dictionary.Language = *language
+	dictionary.Content = newTranslate.Content
+
+	err := s.r.CreateNewTranslate(dictionary)
 
 	return err
 }

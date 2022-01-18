@@ -3,14 +3,23 @@ GET http://localhost:8080
 
 ###
 
-GET http://localhost:8080/random/en/word
+GET http://localhost:8080/v1/word/random
 
 ###
 
-POST http://localhost:8080/random/en/word
+POST http://localhost:8080/v1/word
 Content-Type: application/json
 
 {
-  "word": "man",
-  "language": "EN"
+  "word": "door",
+  "language_code": "fr"
+}
+
+###
+
+POST http://localhost:8080/v1/word/5/tr/translate
+Content-Type: application/json
+
+{
+  "content": "(n) Adam"
 }

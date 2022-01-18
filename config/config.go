@@ -26,6 +26,7 @@ func New() (*Config, error) {
 	viper.SetDefault("DB_PASSWORD", "fakepassword")
 	viper.SetDefault("DB_NAME", "gora")
 	viper.SetDefault("DB_PORT", 5432)
+	viper.SetDefault("DB_SSL", "disable")
 
 	config.AppName = viper.GetString("APPNAME")
 	config.IsDebug = viper.GetBool("ISDEBUG")
@@ -36,6 +37,7 @@ func New() (*Config, error) {
 		Password: viper.GetString("DB_PASSWORD"),
 		Name:     viper.GetString("DB_NAME"),
 		Port:     viper.GetInt("DB_PORT"),
+		SSL:      viper.GetString("DB_SSL"),
 	}
 
 	return config, nil

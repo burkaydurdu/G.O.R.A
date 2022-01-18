@@ -25,10 +25,11 @@ func NewHandler(f *fiber.App, s Service) HTTPHandler {
 }
 
 func (h *handler) registerRoutes() {
-	g := h.f.Group("/random")
+	g := h.f.Group("/v1/word")
 
-	g.Get("/en/word", h.GetRandomWord)
-	g.Post("/en/word", h.CreateWord)
+	g.Get("/random", h.GetRandomWord)
+	g.Post("/", h.CreateWord)
+	g.Post("/:id/:code/translate", h.CreateTranslate)
 }
 
 func (h *handler) GetRandomWord(f *fiber.Ctx) error {
@@ -36,7 +37,7 @@ func (h *handler) GetRandomWord(f *fiber.Ctx) error {
 
 	if err != nil {
 		return f.
-			Status(fiber.StatusInternalServerError).
+			Status(fiber.StatusConflict).
 			SendString(err.Error())
 	}
 
@@ -47,13 +48,39 @@ func (h *handler) CreateWord(f *fiber.Ctx) error {
 	word := new(CreateNewWordDTO)
 
 	if err := f.BodyParser(&word); err != nil {
-		return err
+		return f.
+			Status(fiber.StatusBadRequest).
+			SendString(err.Error())
 	}
 
 	err := h.s.CreateNewWord(word)
 
 	if err != nil {
-		return err
+		return f.
+			Status(fiber.StatusConflict).
+			SendString(err.Error())
+	}
+
+	return f.SendString("OK")
+}
+
+func (h *handler) CreateTranslate(f *fiber.Ctx) error {
+	translate := new(CreateNewTranslateDTO)
+	wordID := f.Params("id")
+	languageCode := f.Params("code")
+
+	if err := f.BodyParser(&translate); err != nil {
+		return f.
+			Status(fiber.StatusBadRequest).
+			SendString(err.Error())
+	}
+
+	err := h.s.CreateNewTranslate(wordID, languageCode, translate)
+
+	if err != nil {
+		return f.
+			Status(fiber.StatusConflict).
+			SendString(err.Error())
 	}
 
 	return f.SendString("OK")

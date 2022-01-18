@@ -12,12 +12,13 @@ import (
 func NewDatabaseClient(conf *config.Config) (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.New(postgres.Config{
 		DSN: fmt.Sprintf(
-			"host=%s user=%s password=%s dbname=%s port=%d sslmode=require",
+			"host=%s user=%s password=%s dbname=%s port=%d sslmode=%s",
 			conf.Database.Hostname,
 			conf.Database.Username,
 			conf.Database.Password,
 			conf.Database.Name,
 			conf.Database.Port,
+			conf.Database.SSL,
 		),
 		PreferSimpleProtocol: true,
 	}), &gorm.Config{})
@@ -27,6 +28,9 @@ func NewDatabaseClient(conf *config.Config) (*gorm.DB, error) {
 	}
 
 	err = db.AutoMigrate(&word.Language{}, &word.Word{}, &word.Dictionary{})
+
+	// Seed
+	CreateLanguages(db)
 
 	if err != nil {
 		return nil, err
