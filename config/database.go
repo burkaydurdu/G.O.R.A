@@ -5,4 +5,5 @@ type Database struct {
 	Username string
 	Password string
 	Port     int
+	Name     string
 }

@@ -26,6 +26,7 @@ func New() (*Config, error) {
 	viper.SetDefault("DB_HOSTNAME", "localhost")
 	viper.SetDefault("DB_USERNAME", "fake")
 	viper.SetDefault("DB_PASSWORD", "fakepassword")
+	viper.SetDefault("DB_NAME", "gora")
 	viper.SetDefault("DB_PORT", 5432)
 
 	config.AppName = viper.GetString("APPNAME")
@@ -35,6 +36,7 @@ func New() (*Config, error) {
 		Hostname: viper.GetString("DB_HOSTNAME"),
 		Username: viper.GetString("DB_USERNAME"),
 		Password: viper.GetString("DB_PASSWORD"),
+		Name:     viper.GetString("DB_NAME"),
 		Port:     viper.GetInt("DB_PORT"),
 	}
 
