@@ -16,8 +16,6 @@ func New() (*Config, error) {
 	config := &Config{}
 
 	viper.AutomaticEnv()
-	viper.SetEnvPrefix("gora")
-
 	const defaultPort = 8080
 
 	viper.SetDefault("APPNAME", "gora")
