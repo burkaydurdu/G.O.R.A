@@ -6,6 +6,7 @@ type Service interface {
 	GetRandomWord() (*Word, error)
 	CreateNewWord(newWord *CreateNewWordDTO) error
 	CreateNewTranslate(wordID string, languageCode string, newTranslate *CreateNewTranslateDTO) error
+	GetRandomTranslate(fromID, toID string) (*Dictionary, error)
 }
 
 type service struct {
@@ -60,4 +61,10 @@ func (s *service) CreateNewTranslate(wordID string, languageCode string, newTran
 	err := s.r.CreateNewTranslate(dictionary)
 
 	return err
+}
+
+func (s *service) GetRandomTranslate(fromID, toID string) (*Dictionary, error) {
+	translate, err := s.r.GetRandomTranslate(fromID, toID)
+
+	return translate, err
 }

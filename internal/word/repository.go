@@ -8,6 +8,7 @@ type Repository interface {
 	CreateNewTranslate(dictionary *Dictionary) error
 	GetLanguageByCode(code string) (*Language, error)
 	GetWordByID(id string) (*Word, error)
+	GetRandomTranslate(fromID, toID string) (*Dictionary, error)
 }
 
 type repository struct {
@@ -62,4 +63,19 @@ func (r *repository) CreateNewTranslate(dictionary *Dictionary) error {
 	result := r.g.Create(&dictionary)
 
 	return result.Error
+}
+
+func (r *repository) GetRandomTranslate(fromID, toID string) (dictionary *Dictionary, err error) {
+	result := r.g.
+		Joins("Language").
+		Joins("Word").
+		Where("\"Word\".language_id = ?", fromID).
+		Where("\"dictionaries\".language_id = ?", toID).
+		First(&dictionary)
+
+	if result.Error == gorm.ErrRecordNotFound {
+		return nil, nil
+	}
+
+	return dictionary, nil
 }

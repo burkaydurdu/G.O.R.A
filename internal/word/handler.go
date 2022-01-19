@@ -29,6 +29,7 @@ func (h *handler) registerRoutes() {
 
 	g.Get("/random", h.GetRandomWord)
 	g.Post("/", h.CreateWord)
+	g.Get("/random/:from/:to/translate", h.GetRandomTranslate)
 	g.Post("/:id/:code/translate", h.CreateTranslate)
 }
 
@@ -84,4 +85,19 @@ func (h *handler) CreateTranslate(f *fiber.Ctx) error {
 	}
 
 	return f.SendString("OK")
+}
+
+func (h *handler) GetRandomTranslate(f *fiber.Ctx) error {
+	fromID := f.Params("from")
+	toID := f.Params("to")
+
+	dictionary, err := h.s.GetRandomTranslate(fromID, toID)
+
+	if err != nil {
+		return f.
+			Status(fiber.StatusConflict).
+			SendString(err.Error())
+	}
+
+	return f.JSON(dictionary)
 }

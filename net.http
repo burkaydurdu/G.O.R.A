@@ -1,4 +1,5 @@
 ###
+
 GET http://localhost:8080
 
 ###
@@ -23,3 +24,7 @@ Content-Type: application/json
 {
   "content": "(n) Adam"
 }
+
+###
+
+GET http://localhost:8080/v1/word/random/10/11/translate
